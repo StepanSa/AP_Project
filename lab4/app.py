@@ -1,7 +1,7 @@
 from flask import Flask
 from wsgiref.simple_server import make_server
 
-from lab4.blueprint import api_blueprint
+from blueprint import api_blueprint
 
 app = Flask(__name__)
 
