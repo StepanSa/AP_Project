@@ -26,8 +26,10 @@ session.add(ticket3)
 
 transaction1 = Transaction(ticket=ticket1, user=user1)
 transaction2 = Transaction(ticket=ticket2, user=user2)
+transaction3 = Transaction(ticket=ticket3, user=user2)
 
 session.add(transaction1)
 session.add(transaction2)
+session.add(transaction3)
 
 session.commit()
