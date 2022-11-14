@@ -54,47 +54,7 @@ paths:
       security:
         - tickettransaction_auth:
             - admin
-            
-  /ticket/findByStatus:
-    get:
-      tags:
-        - ticket
-      summary: Finds Tickets by status
-      description: Multiple status values can be provided with comma separated strings
-      operationId: findTicketsByStatus
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: true
-          schema:
-            type: string
-            default: free
-            enum:
-              - free
-              - booked
-              - sold
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ticket'          
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ticket'
-        '400':
-          description: Invalid status value
-        '401':
-          description: User has to be logged in
-      security:
-        - tickettransaction_auth: []
-        
+
   /ticket/{TicketId}:
     get:
       tags:
@@ -124,8 +84,6 @@ paths:
           description: Invalid ID supplied
         '401':
           description: User has to be logged in
-        '404':
-          description: Ticket not found
       security:
         - tickettransaction_auth: []
     put:
@@ -158,12 +116,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ticket'          
+                $ref: '#/components/schemas/UpdateTicket'
             application/xml:
               schema:
-                $ref: '#/components/schemas/Ticket'
+                $ref: '#/components/schemas/UpdateTicket'
         '400':
-          description: Invalid input
+          description: Invalid id supplied
         '401':
           description: Admin has to be logged in
       security:
@@ -278,8 +236,6 @@ paths:
           description: Invalid ID supplied
         '401':
           description: user has to be logged in
-        '404':
-          description: Order not found
       security:
         - tickettransaction_auth:
           - admin
@@ -342,7 +298,7 @@ paths:
           - admin
           - user
           
-  /transaction/ordersby/{username}:
+  /transaction/ordersby/{userId}:
     get:
       tags:
         - transaction
@@ -372,8 +328,8 @@ paths:
                   $ref: '#/components/schemas/Order'
         '401':
           description: User must be logged in admin
-        '404':
-          description: No orders found
+        '400':
+          description: Invalid id supplied
       security: 
         - tickettransaction_auth: 
           - admin
@@ -409,7 +365,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          description: Entered invalid data
+          description: Username already taken
           
   /user/login:
     get:
@@ -554,17 +510,17 @@ paths:
       security:
         - tickettransaction_auth: []
         
-  /user/{username}:
+  /user/{id}:
     get:
       tags:
         - user
-      summary: Get user by user name
+      summary: Get user by user id
       description: 'This can only be done by logged in admin'
-      operationId: getUserByName
+      operationId: getUserById
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: 'The name that needs to be fetched.'
+          description: 'The id that needs to be fetched.'
           required: true
           schema:
             type: string
@@ -579,11 +535,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetUser'
         '400':
-          description: Invalid username supplied
+          description: Invalid id supplied
         '401':
           description: User must be logged in admin
-        '404':
-          description: User not found
       security:
         - tickettransaction_auth:
           - admin
@@ -594,19 +548,17 @@ paths:
       description: This can only be done by the logged in admin.
       operationId: deleteUser
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: The name that needs to be deleted
+          description: The id that needs to be deleted
           required: true
           schema:
             type: string
       responses:
         '400':
-          description: Invalid username supplied
+          description: Invalid id supplied
         '401':
           description: User must be logged in admin
-        '404':
-          description: User not found
       security:
         - tickettransaction_auth:
           - admin
@@ -819,7 +771,25 @@ components:
           example: 20
       xml:
         name: ticket
-        
+    UpdateTicket:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 123A
+        status:
+          type: string
+          description: ticket status
+          enum:
+            - free
+            - booked
+            - sold
+        price:
+          type: integer
+          format: int32
+          example: 20
+      xml:
+        name: tickettoupdate
     CreateTicket:
       type: object
       properties:
