@@ -20,20 +20,20 @@ def upgrade() -> None:
     op.create_table(
         'user',
         sa.Column('id', sa.Integer, primary_key=True),
-        sa.Column('username', sa.VARCHAR(32)),
+        sa.Column('username', sa.VARCHAR(32), ),
         sa.Column('firstName', sa.VARCHAR(32)),
         sa.Column('lastName', sa.VARCHAR(32)),
         sa.Column('email', sa.VARCHAR(128)),
-        sa.Column('password', sa.VARCHAR(32)),
+        sa.Column('password', sa.VARCHAR(100)),
         sa.Column('phone', sa.VARCHAR(32)),
         sa.Column('birthDate', sa.DATE),
-        sa.Column('userStatus', sa.Enum('0', '1'), default='1')
+        sa.Column('status', sa.Enum('0', '1'), default='1')
     )
     op.create_table(
         'ticket',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('name', sa.VARCHAR(128)),
-        sa.Column('ticketStatus', sa.Enum('free', 'booked', 'sold'), default='free'),
+        sa.Column('status', sa.Enum('free', 'booked', 'sold'), default='free'),
         sa.Column('price', sa.Integer),
     )
     op.create_table(
@@ -41,7 +41,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('ticketId', sa.Integer, sa.ForeignKey('ticket.id')),
         sa.Column('userId', sa.Integer, sa.ForeignKey('user.id')),
-        sa.Column('transactionStatus', sa.Enum('placed', 'approved', 'denied'), default='placed'),
+        sa.Column('status', sa.Enum('placed', 'approved', 'denied'), default='placed'),
     )
     pass
 

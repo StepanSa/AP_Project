@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 mysqlclient = "*"
 sqlalchemy = "*"
-flask = "*"
 marshmallow = "*"
 flask-bcrypt = "*"
+alembic = "*"
+flask = "*"
 
 [dev-packages]
 
