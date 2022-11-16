@@ -72,8 +72,9 @@ class GetOrder(Schema):
 
 
 class PlaceOrder(Schema):
-    ticketId_dic = fields.Nested(GetTicket(only=("id",)))
-    ticketId = fields.List(fields.Pluck(GetTicket, "id"))
+    # ticketId = fields.List(fields.Pluck(GetTicket, "id"))
+    # userId = fields.Nested(UserData(only=("id",)))
+    ticketId = fields.Integer()
+    userId = fields.Integer()
 
-    userId = fields.Nested(UserData(only=("id",)))
     status = fields.String(validate=validate.OneOf(["placed", "approved", "denied"]))

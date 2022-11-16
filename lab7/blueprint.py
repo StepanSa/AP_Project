@@ -131,9 +131,11 @@ def update_ticket(id):
 def create_transaction():
     try:
         transaction_data = PlaceOrder().load(request.json)
+        if not db_utils.does_ticket_exist(Ticket, transaction_data["ticketId"]):
+            return make_response({"Ticket does not exists": 401})
         if db_utils.is_ticket_taken(Transaction, transaction_data["ticketId"]):
             return make_response({"Ticket is unavailable": 400})
-        transaction = db_utils.create_entry(Transaction, **transaction_data)
+        transaction = db_utils.create_order(**transaction_data)
     except ValidationError as e:
         response = dict({"Error": e.normalized_messages()})
         return response
