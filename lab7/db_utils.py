@@ -1,11 +1,12 @@
 from sqlalchemy import desc, exists
 
-from lab6.models import Session, User, Ticket
+from lab6.models import Session, User, Ticket, Transaction
 from lab7.schemas import PlaceOrder
 
 
 def is_id_taken(model_class, id):
     session = Session()
+    print(session.query(exists().where(model_class.id == id)).scalar())
     return session.query(exists().where(model_class.id == id)).scalar()
 
 
@@ -27,7 +28,7 @@ def get_entry_by_id(model_class, id, **kwargs):
 
 def get_entry_user(model_class, id, **kwargs):
     session = Session()
-    if session.query(model_class).filter_by(id=id, **kwargs).all() == []:
+    if session.query(model_class).filter_by(userId=id, **kwargs).all() == []:
         return 400
     return session.query(model_class).filter_by(userId=id, **kwargs).all()
 
@@ -74,7 +75,7 @@ def create_order(commit=True, **orderinfo):
     user = get_entry_by_id(User, userid)
     ticket = get_entry_by_id(Ticket, ticketid)
 
-    order = PlaceOrder(**orderinfo, user=user, ticket=ticket)
+    order = Transaction(**orderinfo, user=user, ticket=ticket)
 
     session.add(order)
     if commit:
@@ -85,6 +86,11 @@ def create_order(commit=True, **orderinfo):
 def is_ticket_taken(model_class, id):
     session = Session()
     return session.query(exists().where(model_class.status == "approved", model_class.ticketId == id)).scalar()
+
+
+def does_ticket_exist(model_class, id):
+    session = Session()
+    return session.query(exists().where(model_class.id == id)).scalar()
 
 
 def is_name_taken(model_class, name):
