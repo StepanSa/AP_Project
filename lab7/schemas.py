@@ -14,6 +14,7 @@ class UserData(Schema):
     phone = fields.String()
     birthDate = fields.Date()
     userStatus = fields.Integer()
+    isAdmin = fields.String()
 
 
 class CreateUser(Schema):
@@ -24,6 +25,7 @@ class CreateUser(Schema):
     password = fields.Function(deserialize=lambda obj: generate_password_hash(obj), load_only=True)
     phone = fields.Function(validate=validate.Regexp('^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\s0-9]{4,20}$'))
     birthDate = fields.Date(validate=lambda x: x < date.today())
+    isAdmin = fields.String(validate=validate.OneOf(choices=['0', '1']))
 
 
 class UpdateUser(Schema):
@@ -32,6 +34,7 @@ class UpdateUser(Schema):
     email = fields.String(validate=validate.Email())
     password = fields.Function(deserialize=lambda obj: generate_password_hash(obj), load_only=True)
     phone = fields.Function(validate=validate.Regexp('^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\s0-9]{4,20}$'))
+    isAdmin = fields.String()
 
 
 class GetUser(Schema):
@@ -43,11 +46,12 @@ class GetUser(Schema):
     phone = fields.String()
     birthDate = fields.Date()
     userStatus = fields.Integer()
+    isAdmin = fields.String(validate=validate.OneOf(choices=['0', '1']), default="0")
 
 
 class CreateTicket(Schema):
     name = fields.String()
-    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]))
+    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]),default="free")
     price = fields.Integer()
 
 
@@ -77,4 +81,4 @@ class PlaceOrder(Schema):
     ticketId = fields.Integer()
     userId = fields.Integer()
 
-    status = fields.String(validate=validate.OneOf(["placed", "approved", "denied"]))
+    status = fields.String(validate=validate.OneOf(["placed", "approved", "denied"]), default="placed")

@@ -27,5 +27,5 @@ CREATE TABLE transaction (
     transactionStatus ENUM('placed', 'approved', 'denied') DEFAULT 'placed'
 );
 
--- mysql -u root -p ap_project
--- source B:/Projects/AP_Project/lab6/create_tables.sql
+-- mysql -u root -p ap
+-- source F:/Projects/3_sem/AP_Project/lab6/create_tables.sql

@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum
 import json
 
-DB_URL = "mysql://root:password@localhost:3306/ap_project"
+DB_URL = "mysql://root:$ygnivkA12@localhost:3306/ap"
 
 engine = create_engine(DB_URL)
 SessionFactory = sessionmaker(bind=engine)
@@ -25,6 +25,7 @@ class User(BaseModel):
     phone = Column(String)
     birthDate = Column(Date)
     status = Column(Enum('0', '1'), default='1')
+    isAdmin = Column(Enum('0', '1'), default='0')
 
 
 class Ticket(BaseModel):
