@@ -26,6 +26,13 @@ def get_entry_by_id(model_class, id, **kwargs):
     return session.query(model_class).filter_by(id=id, **kwargs).one()
 
 
+def get_entry_by_username(model_class, username, **kwargs):
+    session = Session()
+    if session.query(model_class).filter_by(username=username, **kwargs).all() == []:
+        return 400
+    return session.query(model_class).filter_by(username=username, **kwargs).one()
+
+
 def get_entry_user(model_class, id, **kwargs):
     session = Session()
     if session.query(model_class).filter_by(userId=id, **kwargs).all() == []:
@@ -36,6 +43,19 @@ def get_entry_user(model_class, id, **kwargs):
 def get_entry_all(model_class):
     session = Session()
     return session.query(model_class).all()
+
+
+def get_entry_all_ticket_by_status(model_class, status, **kwargs):
+    session = Session()
+    if session.query(model_class).filter_by(status=status, **kwargs).all() == []:
+        return 400
+    return session.query(model_class).filter_by(status=status, **kwargs).all()
+
+def get_entry_all_transaction_by_id(model_class, id, **kwargs):
+    session = Session()
+    if session.query(model_class).filter_by(userId=id, **kwargs).all() == []:
+        return 400
+    return session.query(model_class).filter_by(userId=id, **kwargs).all()
 
 
 def get_entry_self(model_class, id=1, **kwargs):
@@ -85,7 +105,7 @@ def create_order(commit=True, **orderinfo):
 
 def is_ticket_taken(model_class, id):
     session = Session()
-    return session.query(exists().where(model_class.status == "approved", model_class.ticketId == id)).scalar()
+    return session.query(exists().where(model_class.status != "free", model_class.id == id)).scalar()
 
 
 def does_ticket_exist(model_class, id):
