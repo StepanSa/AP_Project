@@ -32,13 +32,6 @@ def get_entry_by_username(model_class, username, **kwargs):
     return session.query(model_class).filter_by(username=username, **kwargs).one()
 
 
-def get_entry_user(model_class, id, **kwargs):
-    session = Session()
-    if session.query(model_class).filter_by(userId=id, **kwargs).all() == []:
-        return 400
-    return session.query(model_class).filter_by(userId=id, **kwargs).all()
-
-
 def get_entry_all(model_class):
     session = Session()
     return session.query(model_class).all()
@@ -76,13 +69,6 @@ def update_entry(entry, *, commit=True, **kwargs):
     if commit:
         session.commit()
     return entry
-
-
-def delete_entry_self(model_class, id, commit=True, **kwargs):
-    session = Session()
-    session.query(model_class).filter_by(id, **kwargs).delete()
-    if commit:
-        session.commit()
 
 
 def create_order(commit=True, **orderinfo):

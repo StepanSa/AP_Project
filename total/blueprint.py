@@ -28,20 +28,10 @@ def admin_required(func):
 		if user.isAdmin == '1':
 			return func(*args, **kwargs)
 		else:
-			return StatusResponse(jsonify({"error": f"User must be an admin to use {func.__name__}."}), 401)
+			return make_response(jsonify({"error": f"User must be an admin to use {func.__name__}."}), 401)
 
 	wrapper.__name__ = func.__name__
 	return wrapper
-
-
-def StatusResponse(response, code):
-	param = response.json
-	if isinstance(param, list):
-		param.append({"code": code})
-	else:
-		param.update({"code": code})
-	end_response = make_response(jsonify(param), code)
-	return end_response
 
 
 ######################################################################################################
@@ -172,7 +162,7 @@ def delete_user_self():
 
 @api_blueprint.route("/ticket", methods=["POST"])
 @jwt_required()
-# @admin_required
+@admin_required
 def create_ticket():
 	try:
 		ticket_data = CreateTicket().load(request.json)
@@ -192,6 +182,7 @@ def get_ticket_by_id(id):
 		return make_response({"Invalid id": 400})
 	return jsonify(GetTicket().dump(ticket))
 
+
 @api_blueprint.route("/ticket/<int:id>", methods=["DELETE"])
 @jwt_required()
 @admin_required
@@ -200,7 +191,7 @@ def delete_ticket_by_id(id):
 	if ticket == 400:
 		return make_response({"Invalid id": 400})
 	db_utils.delete_entry(Ticket, id)
-	return make_response({"code": 200})
+	return make_response("Deleted successfully", 200)
 
 
 @api_blueprint.route("/ticket/<int:id>", methods=["PUT"])
@@ -216,11 +207,12 @@ def update_ticket(id):
 	except ValidationError as e:
 		response = dict({"Error": e.normalized_messages()})
 		return response
-	return make_response({"code": 200})
+	return make_response("Updated successfully", 200)
+
 
 @api_blueprint.route("/ticket/inventory/<string:status>", methods=["GET"])
 @jwt_required()
-# @admin_required
+@admin_required
 def get_ticket_by_status(status):
 	try:
 		ticket = db_utils.get_entry_all_ticket_by_status(Ticket, status)
@@ -235,7 +227,6 @@ def get_ticket_by_status(status):
 
 ######################################################################################################
 # Transaction
-
 
 
 @api_blueprint.route("/transaction/order", methods=["POST"])
@@ -323,8 +314,9 @@ def get_order_by_id(id):
 	if request.method == "GET":
 		transaction = db_utils.get_entry_by_id(Transaction, id)
 		if transaction == 400:
-			return make_response({"Invalid id": 400})
+			return make_response("Invalid id", 400)
 		return jsonify(GetOrder().dump(transaction))
+
 
 @api_blueprint.route("/transaction/order/<int:id>", methods=["DELETE"])
 @jwt_required()
@@ -332,9 +324,9 @@ def get_order_by_id(id):
 def delete_order_by_id(id):
 	transaction = db_utils.get_entry_by_id(Transaction, id)
 	if transaction == 400:
-		return make_response({"Invalid id": 400})
+		return make_response("Invalid id", 400)
 	db_utils.delete_entry(Transaction, id)
-	return make_response({"code": 200})
+	return make_response("Deleted successfully", 200)
 
 
 @api_blueprint.route("/transaction/ordersby/<int:id>", methods=["GET"])
@@ -354,10 +346,10 @@ def order_by_user(id):
 
 		return jsonify(GetOrder(many=True).dump(transaction))
 
-	else:
-		transaction = db_utils.get_entry_all_transaction_by_id(Transaction, id)
-
-		if transaction == 400:
-			return make_response({"The user doesn`t have any transactions": 405})
-
-		return jsonify(GetOrder(many=True).dump(transaction))
+	# else:
+	# 	transaction = db_utils.get_entry_all_transaction_by_id(Transaction, id)
+	#
+	# 	if transaction == 400:
+	# 		return make_response({"The user doesn`t have any transactions": 405})
+	#
+	# 	return jsonify(GetOrder(many=True).dump(transaction))

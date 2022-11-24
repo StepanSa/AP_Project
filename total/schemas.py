@@ -51,7 +51,7 @@ class GetUser(Schema):
 
 class CreateTicket(Schema):
     name = fields.String()
-    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]),default="free")
+    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]), default="free")
     price = fields.Integer()
 
 
@@ -64,7 +64,7 @@ class GetTicket(Schema):
 
 class UpdateTicket(Schema):
     name = fields.String()
-    status = fields.String()
+    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]), default="free")
     price = fields.Integer()
 
 
