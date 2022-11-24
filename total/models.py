@@ -18,12 +18,12 @@ BaseModel = declarative_base()
 class User(BaseModel):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    firstName = Column(String)
-    lastName = Column(String)
-    email = Column(String)
-    password = Column(String)
-    phone = Column(String)
+    username = Column(String(30))
+    firstName = Column(String(30))
+    lastName = Column(String(30))
+    email = Column(String(128))
+    password = Column(String(255))
+    phone = Column(String(30))
     birthDate = Column(Date)
     status = Column(Enum('0', '1'), default='1')
     isAdmin = Column(Enum('0', '1'), default='0')
@@ -32,7 +32,7 @@ class User(BaseModel):
 class Ticket(BaseModel):
     __tablename__ = "ticket"
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String(30))
     status = Column(Enum('free', 'booked', 'sold'), default='free')
     price = Column(Integer)
 

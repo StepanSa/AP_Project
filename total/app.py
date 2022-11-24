@@ -1,15 +1,13 @@
 from flask import Flask
 from wsgiref.simple_server import make_server
-
 from flask_jwt_extended import JWTManager
-
-from blueprint import api_blueprint
+from total.blueprint import api_blueprint
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
-app.register_blueprint(api_blueprint)
+app.register_blueprint(api_blueprint, url_prefix="")
 
 if __name__ == "__main__":
     app.run(debug=True)
