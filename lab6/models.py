@@ -3,9 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum
-import json
 
-# DB_URL = "mysql://root:$ygnivkA12@localhost:3306/ap"
+
 DB_URL = "mysql://root:password@localhost:3306/ap_project"
 
 engine = create_engine(DB_URL)
@@ -25,7 +24,6 @@ class User(BaseModel):
     password = Column(String)
     phone = Column(String)
     birthDate = Column(Date)
-    status = Column(Enum('0', '1'), default='1')
     isAdmin = Column(Enum('0', '1'), default='0')
 
 

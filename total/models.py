@@ -25,7 +25,6 @@ class User(BaseModel):
     password = Column(String(255))
     phone = Column(String(30))
     birthDate = Column(Date)
-    status = Column(Enum('0', '1'), default='1')
     isAdmin = Column(Enum('0', '1'), default='0')
 
 

@@ -151,7 +151,7 @@ paths:
       security:
         - tickettransaction_auth:
           - admin
-          
+
   /ticket/inventory/{status}:
     get:
       tags:
@@ -159,6 +159,17 @@ paths:
       summary: Returns ticket inventories by status
       description: Returns a list of inventories by status
       operationId: getInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTicket'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetTicket'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetTicket'
       responses:
         '200':
           description: successful operation
@@ -208,13 +219,47 @@ paths:
       security:
         - tickettransaction_auth: []
 
+  /transaction/inventory:
+    get:
+      tags:
+        - transaction
+      summary: Returns all transactions
+      description: Returns a list of transactions
+      operationId: getInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetOrder'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/GetOrder'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetOrder'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+        '401':
+          description: admin has to be logged in
+      security:
+        - tickettransaction_auth:
+            - admin
+
   /transaction/order/{TransactionId}:
     put:
       tags:
         - transaction
-      summary: Cancel transaction order by ID
-      description: Cancel transaction order by ID
-      operationId: cancelOrderById
+      summary: Update transaction order by ID
+      description: Update transaction order by ID
+      operationId: updateOrderById
       parameters:
         - name: orderId
           in: path
@@ -229,10 +274,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/UpdateOrder'
             application/xml:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/UpdateOrder'
         '400':
           description: Invalid ID supplied
         '401':
@@ -307,12 +352,12 @@ paths:
       description: Gets all oredrs by certain user
       operationId: getTransactionSendAdmin
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: 'The username whose orders should be recieved'   
+          description: 'The id of user whose orders should be recieved'
           required: true
           schema:
-            type: string
+            type: int32
       responses:
         '200':
           description: successful operation
@@ -321,12 +366,12 @@ paths:
               schema:
                 type: array
                 items: 
-                  $ref: '#/components/schemas/Order'          
+                  $ref: '#/components/schemas/GetOrder'
             application/xml:
               schema:
                 type: array
                 items: 
-                  $ref: '#/components/schemas/Order'
+                  $ref: '#/components/schemas/GetOrder'
         '401':
           description: User must be logged in admin
         '400':
@@ -334,7 +379,6 @@ paths:
       security: 
         - tickettransaction_auth: 
           - admin
-          - user
           
   /user:
     post:
@@ -398,24 +442,9 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid username/password supplied
-          
-  /user/logout:
-    get:
-      tags:
-        - user
-      summary: Logs out current logged in user session
-      description: 'This can only be done if user is logged in'
-      operationId: logoutUser
-      parameters: []
-      responses:
-        '200':
-          description: successful operation
         '401':
-          description: user has to be logged in
-      security:
-        - tickettransaction_auth: []
+          description: Could not verify
+
         
   /user/self:
     get:
@@ -431,10 +460,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'          
+                $ref: '#/components/schemas/GetUser'
             application/xml:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/GetUser'
         '401':
           description: User must be logged in
       security: 
@@ -445,37 +474,6 @@ paths:
       summary: Updates user
       description: Updates information only for logged-in user.
       operationId: updateUserSelf
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
-          schema:
-            type: string
-        - name: firstName
-          in: query
-          description: ''
-          required: false
-          schema:
-            type: string
-        - name: lastName
-          in: query
-          description: ''
-          required: false
-          schema:
-            type: string
-        - name: phone
-          in: query
-          description: ''
-          required: false
-          schema:
-            type: string
-        - name: email
-          in: query
-          description: ''
-          required: false
-          schema:
-            type: string
       requestBody:
         description: Update your user
         content:
@@ -501,7 +499,7 @@ paths:
       tags:
         - user
       summary: Deletes user
-      description: The user won't be deleted, it's userStatus will be changed to 1.
+      description: Deletes user.
       operationId: deleteUserSelf
       responses:
         '200':
@@ -566,7 +564,7 @@ paths:
           
 components:
   schemas:
-    Order:
+    GetOrder:
       type: object
       properties:
         id:
@@ -595,17 +593,12 @@ components:
     PlaceOrder:
       required:
         - ticketId
-        - userId
       type: object
       properties:
         ticketId:
           type: integer
           format: int64
           example: 191
-        userId:
-          type: integer
-          format: int64
-          example: 85495
         status:
           type: string
           description: Order Status
@@ -616,7 +609,23 @@ components:
           example: placed
       xml:
         name: order
-        
+    UpdateOrder:
+      type: object
+      properties:
+        status:
+          type: string
+          example: placed
+        ticketId:
+          type: integer
+          format: int32
+          description: ticket id
+          example: 2
+        userId:
+          type: integer
+          format: int32
+          example: 1
+      xml:
+        name: transactiontoupdate
     User:
       type: object
       properties:
@@ -737,17 +746,10 @@ components:
           type: string
           format: date
           example: '2022-10-22'
-        userStatus:
-          type: integer
-          format: int32
-          enum:
-            - 0
-            - 1
-          example: 0
       xml:
         name: getuser
         
-    Ticket:
+    GetTicket:
       required:
         - name
       type: object

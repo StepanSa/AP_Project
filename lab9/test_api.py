@@ -1,8 +1,6 @@
-from base64 import b64encode
-import base64
 import pytest
 from total.app import app
-from total.models import User, Session, Ticket, Transaction, BaseModel, engine
+from total.models import User, Session, BaseModel, engine
 
 
 @pytest.fixture
@@ -487,32 +485,6 @@ class TestTransaction:
         assert response.status_code == 200
         assert response.data == b"Updated successfully"
 
-    # def test_transaction_orders_by_user(self, wrapper, transaction1, ticket1, user_info1, user_info2):
-    #     app.test_client().post('/user', json=user_info1)
-    #     app.test_client().post('/user', json=user_info2)
-    #
-    #     new_user = Session.query(User).filter(User.username == user_info2["username"]).first()
-    #     new_user.isAdmin = '1'
-    #
-    #     resp = app.test_client().get('/login', json={"username": new_user.username, "password": "beb123beb"})
-    #     token = resp.json['token']
-    #     print(resp.json)
-    #
-    #     res = app.test_client().post('/ticket', json=ticket1, headers={"Authorization": f"Bearer {token}"})
-    #     print(res.json)
-    #
-    #     app.test_client().post('/transaction/order', json=transaction1, headers={"Authorization": f"Bearer {token}"})
-    #
-    #     uid = 1
-    #     response = app.test_client().get(f'/transaction/ordersby/{uid}', headers={"Authorization": f"Bearer {token}"})
-    #
-    #     assert response.status_code == 200
-    #     oi = response.json
-    #     assert oi[0]["ticketId"] == 1
-    #     assert oi[0]["userId"] == 1
-    #     assert oi[0]["status"] == "placed"
-    #     assert oi[0]["id"] == 1
-
     def test_transaction_order_get_by_id(self, wrapper, transaction1, ticket1, user_info2):
         app.test_client().post('/user', json=user_info2)
 
@@ -533,6 +505,26 @@ class TestTransaction:
         assert ti["userId"] == 1
         assert ti["status"] == "placed"
         assert ti["id"] == 1
+
+    def test_transaction_orders_get(self, wrapper, transaction1, ticket1, user_info2):
+        app.test_client().post('/user', json=user_info2)
+
+        new_user = Session.query(User).filter(User.username == user_info2["username"]).first()
+        new_user.isAdmin = '1'
+
+        resp = app.test_client().get('/login', json={"username": new_user.username, "password": "beb123beb"})
+        token = resp.json['token']
+
+        app.test_client().post('/ticket', json=ticket1, headers={"Authorization": f"Bearer {token}"})
+        app.test_client().post('/transaction/order', json=transaction1, headers={"Authorization": f"Bearer {token}"})
+        response = app.test_client().get('/transaction/inventory', json=transaction1, headers={"Authorization": f"Bearer {token}"})
+
+        assert response.status_code == 200
+        ti = response.json
+        assert ti[0]["ticketId"] == 1
+        assert ti[0]["userId"] == 1
+        assert ti[0]["status"] == "placed"
+        assert ti[0]["id"] == 1
 
     def test_transaction_order_get_by_id_invalid(self, wrapper, transaction1, ticket1, user_info2):
         app.test_client().post('/user', json=user_info2)
