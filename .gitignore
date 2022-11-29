@@ -4,4 +4,4 @@
 /.python-version
 /Pipfile
 /Pipfile.lock
-lab6/__pycache__/
+.coverage
