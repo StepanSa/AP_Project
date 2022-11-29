@@ -13,14 +13,13 @@ class UserData(Schema):
     password = fields.String()
     phone = fields.String()
     birthDate = fields.Date()
-    userStatus = fields.Integer()
     isAdmin = fields.String()
 
 
 class CreateUser(Schema):
-    username = fields.String()
-    firstName = fields.String()
-    lastName = fields.String()
+    username = fields.String(required=True, validate=validate.Regexp('^[a-zA-Z\d\.-_]{4,120}$'))
+    firstName = fields.String(required=True, validate=validate.Length(min=2))
+    lastName = fields.String(required=True, validate=validate.Length(min=2))
     email = fields.String(validate=validate.Email())
     password = fields.Function(deserialize=lambda obj: generate_password_hash(obj), load_only=True)
     phone = fields.Function(validate=validate.Regexp('^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\s0-9]{4,20}$'))
@@ -29,12 +28,11 @@ class CreateUser(Schema):
 
 
 class UpdateUser(Schema):
-    firstName = fields.String()
-    lastName = fields.String()
+    firstName = fields.String(validate=validate.Length(min=2))
+    lastName = fields.String(validate=validate.Length(min=2))
     email = fields.String(validate=validate.Email())
     password = fields.Function(deserialize=lambda obj: generate_password_hash(obj), load_only=True)
     phone = fields.Function(validate=validate.Regexp('^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\s0-9]{4,20}$'))
-    isAdmin = fields.String()
 
 
 class GetUser(Schema):
@@ -45,13 +43,12 @@ class GetUser(Schema):
     email = fields.String()
     phone = fields.String()
     birthDate = fields.Date()
-    userStatus = fields.Integer()
     isAdmin = fields.String(validate=validate.OneOf(choices=['0', '1']), default="0")
 
 
 class CreateTicket(Schema):
     name = fields.String()
-    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]),default="free")
+    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]), default="free")
     price = fields.Integer()
 
 
@@ -64,7 +61,7 @@ class GetTicket(Schema):
 
 class UpdateTicket(Schema):
     name = fields.String()
-    status = fields.String()
+    status = fields.String(validate=validate.OneOf(["free", "booked", "sold"]), default="free")
     price = fields.Integer()
 
 
@@ -76,9 +73,11 @@ class GetOrder(Schema):
 
 
 class PlaceOrder(Schema):
-    # ticketId = fields.List(fields.Pluck(GetTicket, "id"))
-    # userId = fields.Nested(UserData(only=("id",)))
     ticketId = fields.Integer()
     userId = fields.Integer()
-
     status = fields.String(validate=validate.OneOf(["placed", "approved", "denied"]), default="placed")
+
+
+class UpdateOrder(Schema):
+    ticketId = fields.Integer()
+    status = fields.String(validate=validate.OneOf(["placed", "approved", "denied"]))

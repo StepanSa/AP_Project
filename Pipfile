@@ -10,6 +10,10 @@ marshmallow = "*"
 flask-bcrypt = "*"
 alembic = "*"
 flask = "*"
+flask-jwt = "*"
+flask-jwt-extended = "*"
+pytest = "*"
+coverage = "*"
 
 [dev-packages]
 
