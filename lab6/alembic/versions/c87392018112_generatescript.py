@@ -27,7 +27,6 @@ def upgrade() -> None:
         sa.Column('password', sa.VARCHAR(100)),
         sa.Column('phone', sa.VARCHAR(32)),
         sa.Column('birthDate', sa.DATE),
-        sa.Column('status', sa.Enum('0', '1'), default='1'),
         sa.Column('isAdmin', sa.Enum('0', '1'), default='0')
     )
     op.create_table(
@@ -52,4 +51,3 @@ def downgrade() -> None:
     op.drop_table('user')
     op.drop_table('ticket')
 
-    pass

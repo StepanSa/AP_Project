@@ -1,7 +1,6 @@
-from sqlalchemy import desc, exists
+from sqlalchemy import exists
 
 from lab6.models import Session, User, Ticket, Transaction
-from lab7.schemas import PlaceOrder
 
 
 def is_id_taken(model_class, id):
@@ -50,6 +49,7 @@ def get_entry_all_ticket_by_status(model_class, status, **kwargs):
     if session.query(model_class).filter_by(status=status, **kwargs).all() == []:
         return 400
     return session.query(model_class).filter_by(status=status, **kwargs).all()
+
 
 def get_entry_all_transaction_by_id(model_class, id, **kwargs):
     session = Session()
