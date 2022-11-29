@@ -4,4 +4,4 @@
 /.python-version
 /Pipfile
 /Pipfile.lock
-.coverage
+/.coverage
